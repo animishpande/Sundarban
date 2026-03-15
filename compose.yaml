@@ -1,0 +1,7 @@
+﻿services:
+  sundarban:
+    image: sundarban
+    build:
+      context: .
+      dockerfile: Sundarban/Dockerfile
+

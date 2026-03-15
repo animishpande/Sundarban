@@ -1,0 +1,6 @@
+@Sundarban_HostAddress = http://localhost:5201
+
+GET {{Sundarban_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
