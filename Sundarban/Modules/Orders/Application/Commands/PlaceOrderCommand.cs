@@ -1,5 +1,6 @@
 using MediatR;
+using Sundarban.Modules.Orders.Application.DTOs;
 
 namespace Sundarban.Modules.Orders.Application.Commands;
 
-public record PlaceOrderCommand(Guid CustomerId, string Name, string Category, decimal Price) : IRequest<Guid>;
+public record PlaceOrderCommand(PlaceOrderDto PlaceOrderDto) : IRequest<Guid>;

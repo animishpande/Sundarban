@@ -1,6 +1,9 @@
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Sundarban.Modules.Customers.Application.Commands;
+using Sundarban.Modules.Customers.Application.DTOs;
 using Sundarban.Modules.Customers.Application.Queries;
+using Sundarban.Modules.Customers.Application.Queries.GetCustomerById;
 
 namespace Sundarban.Modules.Customers.Presentation;
 
@@ -18,6 +21,12 @@ public static class CustomerEndpoints
         {
             var customers = await mediator.Send(new GetCustomerQuery());
             return Results.Ok(customers);
+        });
+
+        app.MapGet("/customers/{id}", async ([FromRoute] Guid id, IMediator mediator) =>
+        {
+            var customer = await mediator.Send(new GetCustomerByIdQuery(id));
+            return Results.Ok(customer);
         });
     }
 }

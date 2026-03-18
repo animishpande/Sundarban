@@ -10,9 +10,9 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, List<Order>>
     
     public GetOrderHandler(OrdersDbContext dbContext) => _dbContext = dbContext;
     
-    public Task<List<Order>> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+    public Task<List<Order>> Handle(GetOrderQuery query, CancellationToken cancellationToken)
     {
-        var orderList = _dbContext.Orders.ToList();
+        var orderList = _dbContext.Orders.Where(o => o.CustomerId == query.CustomerId).ToList();
         return Task.FromResult(orderList);
     }
 }

@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Sundarban.Contracts;
+using Sundarban.Middleware;
 using Sundarban.Modules.Customers.Infrastructure;
 using Sundarban.Modules.Customers.Presentation;
 using Sundarban.Modules.Orders.Infrastructure;
 using Sundarban.Modules.Orders.Presentation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +28,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference("/docs", options =>
+    {
+        options.WithTitle("Sundarban API");
+    });
 }
+
+app.UseMiddleware<ExceptionHandler>();
 
 app.MapOrdersEndpoints();
 

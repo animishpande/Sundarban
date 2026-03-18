@@ -1,6 +1,6 @@
 namespace Sundarban.Exceptions;
 
-public class NotFoundException
+public class NotFoundException : Exception
 {
-    
+    public NotFoundException(string entity, object id) : base($"{entity} with id '{id}' was not found.") {}
 }
