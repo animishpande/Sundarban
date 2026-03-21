@@ -24,12 +24,22 @@ public class Order
             Category = category,
             Price = price,
             CustomerId = customerId,
+            Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };
     }
-    // TODO: Add update order status feature
-    // public static Order UpdateStatus(Guid id, OrderStatus status)
-    // {
-    //     return new Or
-    // }
+    public Order UpdateStatus(Order order, OrderStatus status)
+    {
+        var updatedOrder = new Order
+        {
+            Id = order.Id,
+            Name = order.Name,
+            Category = order.Category,
+            Price = order.Price,
+            CustomerId = order.CustomerId,
+            Status = status,
+            CreatedAt = order.CreatedAt
+        };
+        return updatedOrder;
+    }
 }

@@ -6,6 +6,8 @@ using Sundarban.Modules.Customers.Presentation;
 using Sundarban.Modules.Orders.Infrastructure;
 using Sundarban.Modules.Orders.Presentation;
 using Scalar.AspNetCore;
+using Sundarban.Modules.Payments.Infrastructure;
+using Sundarban.Modules.Payments.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +18,17 @@ builder.Services.AddOpenApi();
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+// Schema and Database Configurations
 builder.Services.AddDbContext<OrdersDbContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddDbContext<CustomersDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<PaymentsDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
+// Interface Configurations
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
@@ -39,6 +47,8 @@ app.UseMiddleware<ExceptionHandler>();
 app.MapOrdersEndpoints();
 
 app.MapCustomerEndpoints();
+
+app.MapPaymentsEndpoints();
 
 app.UseHttpsRedirection();
 
