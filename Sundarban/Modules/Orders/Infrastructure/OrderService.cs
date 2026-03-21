@@ -26,7 +26,7 @@ public class OrderService : IOrderService
         var order = await _ordersDbContext.Orders.FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
         if (order is null)
             return false;
-        order.UpdateStatus(order, OrderStatus.Paid);
+        order.UpdateStatus(OrderStatus.Paid);
         await _ordersDbContext.SaveChangesAsync(cancellationToken);
         return true;
     }

@@ -28,18 +28,8 @@ public class Order
             CreatedAt = DateTime.UtcNow
         };
     }
-    public Order UpdateStatus(Order order, OrderStatus status)
+    public void UpdateStatus(OrderStatus status)
     {
-        var updatedOrder = new Order
-        {
-            Id = order.Id,
-            Name = order.Name,
-            Category = order.Category,
-            Price = order.Price,
-            CustomerId = order.CustomerId,
-            Status = status,
-            CreatedAt = order.CreatedAt
-        };
-        return updatedOrder;
+        Status = status;
     }
 }
