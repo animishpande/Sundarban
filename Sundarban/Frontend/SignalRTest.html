@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignalR testing</title>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const customerId = "6c688a55-d471-44b1-b70e-7187e42480e7";
+        
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5000/hubs/notifications")
+            .build();
+
+        connection.on("OrderPaid", (data) => {
+            console.log("🔔 Notification received:", data);
+        });
+
+        connection.start()
+            .then(() => {
+                console.log("✅ Connected to SignalR");
+                return connection.invoke("JoinCustomerGroup", customerId);
+            })
+            .then(() => console.log(`✅ Joined group for customer ${customerId}`))
+            .catch(err => console.error("❌ Error:", err));
+    </script>
+</body>
+</html>

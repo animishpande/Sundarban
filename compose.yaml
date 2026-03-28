@@ -1,7 +1,28 @@
-﻿services:
-  sundarban:
-    image: sundarban
-    build:
-      context: .
-      dockerfile: Sundarban/Dockerfile
+﻿#services:
+#  sundarban:
+#    image: sundarban
+#    build:
+#      context: .
+#      dockerfile: Sundarban/Dockerfile
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: db_admin
+      POSTGRES_PASSWORD: postgres2025
+      POSTGRES_DB: EcommerceDB
+    ports:
+      - "5432:5432"
+    
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI -> localhost:15672 (guest/guest)
+        
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
 

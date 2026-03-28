@@ -21,13 +21,9 @@ public class OrderService : IOrderService
         return (order is not null) ? order.Price : 0m;
     }
 
-    public async Task<bool> MarkOrderAsPaidAsync(Guid orderId, CancellationToken cancellationToken)
+    public async Task<Guid> GetOrderCustomerIdAsync(Guid orderId, CancellationToken cancellationToken)
     {
         var order = await _ordersDbContext.Orders.FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
-        if (order is null)
-            return false;
-        order.UpdateStatus(OrderStatus.Paid);
-        await _ordersDbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        return (order is not null) ? order.CustomerId : Guid.Empty;
     }
 }
