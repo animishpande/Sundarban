@@ -38,16 +38,30 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 
 // MassTransit Configuration
+var rabbitMqSection = builder.Configuration.GetSection("RabbitMq");
+var rabbitMqHost = rabbitMqSection["Host"] ?? "localhost";
+var rabbitMqVirtualHost = rabbitMqSection["VirtualHost"] ?? "/";
+
 builder.Services.AddMassTransit(m =>
 {
     m.AddConsumer<OrderPaidConsumer>();
 
     m.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(rabbitMqHost, rabbitMqVirtualHost, h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            var rabbitMqUsername = rabbitMqSection["Username"];
+            var rabbitMqPassword = rabbitMqSection["Password"];
+
+            if (!string.IsNullOrEmpty(rabbitMqUsername))
+            {
+                h.Username(rabbitMqUsername);
+            }
+
+            if (!string.IsNullOrEmpty(rabbitMqPassword))
+            {
+                h.Password(rabbitMqPassword);
+            }
         });
 
         cfg.ReceiveEndpoint("order-paid-notifications", e =>

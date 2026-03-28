@@ -31,6 +31,6 @@ public class OrderPaidConsumer : IConsumer<OrderPaidEvent>
                 Notification = $"Your order {message.OrderId} has been paid successfully.",
                 Timestamp = DateTimeOffset.UtcNow
             });
-        await _cacheService.RemoveAsync($"order:{context.Message.OrderId}");
+        await _cacheService.RemoveAsync($"order:{context.Message.CustomerId}");
     }
 }

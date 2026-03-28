@@ -30,8 +30,5 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Modules\Orders\Application\Queries\GetAllOrders\" />
-    </ItemGroup>
 
 </Project>

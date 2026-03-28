@@ -29,6 +29,6 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, List<Order>>
         // set cache
         await _cacheService.SetAsync(cacheKey, orderList, TimeSpan.FromMinutes(5), cancellationToken);
         
-        return await Task.FromResult(orderList);
+        return orderList;
     }
 }
