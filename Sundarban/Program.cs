@@ -38,6 +38,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 
 // MassTransit Configuration
+var useRabbitMq = builder.Configuration.GetValue<bool>("Features:UseRabbitMq");
 var rabbitMqSection = builder.Configuration.GetSection("RabbitMq");
 var rabbitMqHost = rabbitMqSection["Host"] ?? "localhost";
 var rabbitMqVirtualHost = rabbitMqSection["VirtualHost"] ?? "/";
@@ -45,38 +46,54 @@ var rabbitMqVirtualHost = rabbitMqSection["VirtualHost"] ?? "/";
 builder.Services.AddMassTransit(m =>
 {
     m.AddConsumer<OrderPaidConsumer>();
-
-    m.UsingRabbitMq((context, cfg) =>
+    if (useRabbitMq)
     {
-        cfg.Host(rabbitMqHost, rabbitMqVirtualHost, h =>
+        m.UsingRabbitMq((context, cfg) =>
         {
-            var rabbitMqUsername = rabbitMqSection["Username"];
-            var rabbitMqPassword = rabbitMqSection["Password"];
-
-            if (!string.IsNullOrEmpty(rabbitMqUsername))
+            cfg.Host(rabbitMqHost, rabbitMqVirtualHost, h =>
             {
-                h.Username(rabbitMqUsername);
-            }
+                var rabbitMqUsername = rabbitMqSection["Username"];
+                var rabbitMqPassword = rabbitMqSection["Password"];
 
-            if (!string.IsNullOrEmpty(rabbitMqPassword))
+                if (!string.IsNullOrEmpty(rabbitMqUsername))
+                {
+                    h.Username(rabbitMqUsername);
+                }
+
+                if (!string.IsNullOrEmpty(rabbitMqPassword))
+                {
+                    h.Password(rabbitMqPassword);
+                }
+            });
+
+            cfg.ReceiveEndpoint("order-paid-notifications", e =>
             {
-                h.Password(rabbitMqPassword);
-            }
+                e.ConfigureConsumer<OrderPaidConsumer>(context);
+            });
         });
-
-        cfg.ReceiveEndpoint("order-paid-notifications", e =>
+    } else
+    {
+        m.UsingInMemory((ctx, cfg) =>
         {
-            e.ConfigureConsumer<OrderPaidConsumer>(context);
+            cfg.ConfigureEndpoints(ctx);
         });
-    });
+    }
 });
 
 // Redis Configuration
-builder.Services.AddStackExchangeRedisCache(options =>
+var useRedis = builder.Configuration.GetValue<bool>("Features:UseRedis");
+if (useRedis)
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "sundarban:"; // all keys prefixed — avoids collisions
-});
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = builder.Configuration.GetConnectionString("Redis");
+        options.InstanceName = "sundarban:"; // all keys prefixed — avoids collisions
+    });
+} 
+else
+{
+    builder.Services.AddDistributedMemoryCache(); // IDistributedCache backed by memory
+}
 
 var app = builder.Build();
 
