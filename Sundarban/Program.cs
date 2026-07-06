@@ -7,6 +7,7 @@ using Sundarban.Modules.Customers.Presentation;
 using Sundarban.Modules.Orders.Infrastructure;
 using Sundarban.Modules.Orders.Presentation;
 using Scalar.AspNetCore;
+using Sundarban.Modules.Customers.Domain;
 using Sundarban.Modules.Notifications.Consumers;
 using Sundarban.Modules.Notifications.Presentation;
 using Sundarban.Modules.Payments.Infrastructure;
@@ -96,6 +97,29 @@ else
 }
 
 var app = builder.Build();
+
+// Seed Data
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<CustomersDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    await dbContext.Database.MigrateAsync();
+
+    if (!await dbContext.Customers.AnyAsync())
+    {
+        logger.LogInformation("Seeding customers into database");
+
+        var customers = new[]
+        {
+            Customer.Create("Seeded", "User", "seededuser@new.com")
+        };
+
+        await dbContext.Customers.AddRangeAsync(customers);
+        await dbContext.SaveChangesAsync();
+        logger.LogInformation("Seeded {count} customers", customers.Length);
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
